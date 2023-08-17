@@ -111,8 +111,8 @@ button:hover {
         name: "Login",
         data() {
             return {
-                id: '',
-                pw: '',
+                id: null,
+                pw: null,
             }
         },
         methods: {
