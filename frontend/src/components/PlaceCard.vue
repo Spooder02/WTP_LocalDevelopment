@@ -138,7 +138,7 @@
             "comment": this.commentBox
             }, { headers : { Authorization: 'Token '+sessionStorage.getItem('userToken') }})
             .then(res => {
-              alert("댓글 작성이 완료되었습니다!")
+              this.commentBox = ''
               this.reloadData()
             })
             .catch(e => {
