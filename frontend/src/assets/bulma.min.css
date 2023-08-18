@@ -23,3 +23,7 @@ p.place-details{
 .subimage-container>img {
     max-height: 300px;
 }
+.display-comments {
+    max-height: 400px;
+    overflow: scroll;
+}

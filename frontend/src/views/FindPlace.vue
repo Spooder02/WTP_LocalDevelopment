@@ -5,6 +5,7 @@
             <p>운동장 목록</p>
             <div class="card-zone">
                 <PlaceCard
+                :key="key"
                 v-for="data in placeInfo"
                 :placeId="data.id"
                 :placeImage="data.image"
@@ -70,7 +71,8 @@
         },
         data() {
             return {
-                placeInfo: null
+                placeInfo: null,
+                key: 0
             }
         },
         mounted() {
@@ -81,6 +83,11 @@
             .catch((e) => {
                 alert('장소 세부 정보를 불러오는 데 실패했습니다!')
             })
+        },
+        methods: {
+            updateView() {
+                this.key += 1;
+            }
         }
     }
 </script>

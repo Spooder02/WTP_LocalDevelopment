@@ -11,7 +11,7 @@
       <p>{{ placeLocation }}</p>
       <p>{{ placeDescription }}</p>
       <a @click="open()">{{ openDetail }}</a>
-      <div class="place-details" v-if="placeDetail">
+      <div :key="key" class="place-details" v-if="placeDetail">
         별점: {{ ratings }} / 5 <br>
         상태: {{ openStatus.status_updated_at? (openStatus.open_status? "열려있음":"닫힘"):"정보 없음" }}
         <button style="background-color: #23C55D; border: 0;" @click="updateOpenStatus(true)">열렸어요</button><button style="background-color: #F84F31; border: 0;" @click="updateOpenStatus(false)">닫혔어요</button>
@@ -27,12 +27,15 @@
             <input type="text" style="width: 100%; height: 1.7rem;" v-model="commentBox">
             <button style="position: absolute; top: 0; right: 0.1px; margin-top: 0.2rem;" @click="postcomment()">댓글 등록</button>
           </div>
+          <div class="display-comments">
             <Comment
-            v-for="comment in this.response.comments"
+            v-for="comment in this.response.comments.slice().reverse()"
+            :key="comment.id"
             :username="comment.username"
             :commentValue="comment.comment"
             :created_at="comment.comment_uploaded_at"
-            />
+            /> 
+          </div>
           </div>
           <div class="subimage-zone">
             <p>장소 세부 이미지</p>
@@ -79,7 +82,8 @@
           rating: 0,
           openDetail: '상세 정보 열기',
           commentBox: '',
-          image: null
+          image: null,
+          key: 0
         }
       },
       methods: {
@@ -96,9 +100,11 @@
           axios.post(process.env.VUE_APP_BACKEND_ADDRESS+'/place/rating/'+this.response.id+'/', {
             "user": sessionStorage.getItem('nickname'),
             "rating": this.rating
-          })
+          },
+          { headers : { Authorization: 'Token '+sessionStorage.getItem('userToken') }}
+          )
           .then(() => {
-            alert("별점 등록 성공")
+            alert("별점 등록 성공") 
           })
           .catch(e => {
             alert("해당 기능은 로그인 후 사용 가능합니다.")
@@ -112,8 +118,13 @@
           axios.post(process.env.VUE_APP_BACKEND_ADDRESS+'/place/open_status/'+this.response.id+'/', {
             "username": sessionStorage.getItem('nickname'),
             "open_status": status
-          })
+          },
+          { headers : { Authorization: 'Token '+sessionStorage.getItem('userToken') }})
           .then(res => {
+            axios.get(process.env.VUE_APP_BACKEND_ADDRESS+'/place/open_status/'+this.placeId+'/')
+            .then(res => {
+              this.openStatus = res.data
+            })
             alert("상태가 업데이트 되었습니다!")
           })
           .catch(e => {
@@ -125,9 +136,10 @@
             axios.post(process.env.VUE_APP_BACKEND_ADDRESS+'/place/comment/'+this.response.id+'/', {
             "username": sessionStorage.getItem('nickname'),
             "comment": this.commentBox
-            })
+            }, { headers : { Authorization: 'Token '+sessionStorage.getItem('userToken') }})
             .then(res => {
               alert("댓글 작성이 완료되었습니다!")
+              this.reloadData()
             })
             .catch(e => {
               alert("해당 기능은 로그인 후 사용 가능합니다.")
@@ -137,23 +149,29 @@
           }
         },
         getImage(imageFile) {
-          this.image = imageFile
+          this.image = imageFile.target.files[0]
         },
         uploadImage() {
           const formData = new FormData()
           if (this.image)
-            formData.append('image', this.image.originalTarget.files[0])
+            formData.append('image', this.image)
           formData.append('username', sessionStorage.getItem('nickname'))
           axios.post(process.env.VUE_APP_BACKEND_ADDRESS+"/place/image/"+this.response.id+'/', 
             formData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
+            { headers: { 'Content-Type': 'multipart/form-data', Authorization: 'Token '+sessionStorage.getItem('userToken') } }
           )
           .then(res => {
+            this.reloadData()
             alert("등록이 완료되었습니다!")
           })
           .catch(e => {
-            alert("해당 기능은 로그인 후 사용 가능합니다.")
+            if (e.message == "Request failed with status code 401") alert("해당 기능은 로그인 후 사용 가능합니다.")
+            else alert("이미지를 등록해주세요!")
           })
+        },
+        reloadData() {
+          axios.get(process.env.VUE_APP_BACKEND_ADDRESS+'/place/get/'+this.response.id+'/')
+          .then(res => (this.response = res.data))
         }
       },
       mounted() {
