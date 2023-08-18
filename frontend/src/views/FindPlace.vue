@@ -44,7 +44,7 @@
         }
     }
     @media screen and (max-width: 960px) {
-        .container { grid-template-rows: 1fr 1fr; }
+        .container { grid-template-rows: 50vh 50vh; }
         .place-cards {
             height: 100vw;
         }

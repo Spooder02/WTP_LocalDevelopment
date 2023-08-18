@@ -27,3 +27,6 @@ p.place-details{
     max-height: 400px;
     overflow: scroll;
 }
+.place-description {
+    white-space: pre;
+}

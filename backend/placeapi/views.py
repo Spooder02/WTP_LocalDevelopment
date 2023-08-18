@@ -36,6 +36,29 @@ def add_place(request):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def adjust_place_detail(request, placeinfo_id):
+    serializers = PlaceInfoSerializer(data=request.data)
+    try:
+        if serializers.is_valid():
+            place = PlaceInfo.objects.get(id=placeinfo_id)
+            if (request.data.get('image') != None):
+                place.image = request.data.get('image')
+            place.name = request.data.get('name')
+            place.lat = request.data.get('lat')
+            place.lng = request.data.get('lng')
+            place.address = request.data.get('address')
+            place.contact = request.data.get('contact')
+            place.homepage = request.data.get('homepage')
+            place.time = request.data.get('time')
+            place.description = request.data.get('description')
+            place.save()
+            return Response(status=status.HTTP_200_OK)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def comment(request, placeinfo_id):
@@ -66,7 +89,6 @@ def image(request, placeinfo_id):
             user = get_user_model().objects.get(nickname=request.data.get('username'))
             place = PlaceInfo.objects.get(id=placeinfo_id)
             image_data = request.data.get('image')
-            print(image_data)
             if (image_data != None):
                 image = PlaceImage.objects.create(username=user, image=image_data)
                 place.sub_images.add(image)

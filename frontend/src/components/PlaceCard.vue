@@ -9,7 +9,7 @@
     <div class="content">
       <p class="title is-4">{{ placeName }}</p>
       <p>{{ placeLocation }}</p>
-      <p>{{ placeDescription }}</p>
+      <p class="place-description">{{ placeDescription }}</p>
       <a @click="open()">{{ openDetail }}</a>
       <div class="place-details" v-if="placeDetail">
         별점: {{ ratings }} / 5 <br>
@@ -19,9 +19,9 @@
         <p style="font-size: 8pt; color: #aaaaaa; text-align: right;">업데이트 시간: {{ openStatus.status_updated_at? openStatus.status_updated_at: "정보 없음" }}</p>
         연락처: {{ response.contact }}<br>
         홈페이지: <a :href="response.homepage" target="_blank">Link</a><br>
-        운영 시간: {{ response.time }}<br><br>
-        별점을 등록하세요!
-        <StarRating @update:rating="setRating" :show-rating="false"/>
+        운영 시간: {{ response.time }}<br>
+        <p style="font-weight: 500; margin-top: 1em; font-size: 14pt;">별점을 등록하세요!</p>
+        <StarRating style="justify-content: center;" @update:rating="setRating" :show-rating="false"/>
         <div class="comment-zone">
           <div class="post-comment" style="position: relative;">
             <input type="text" style="width: 100%; height: 1.7rem;" v-model="commentBox">
@@ -46,7 +46,7 @@
             <img v-for="datas in this.response.sub_images" :src="this.backend_url+datas.image">
           </div>
         </div>
-        <p style="text-align: right; padding-top: 0.5rem; color:#aaaaaa;" @click="fixData()">정보 수정하기</p>
+        <p style="text-align: right; padding-top: 0.5rem; color:#aaaaaa;" @click="fixdata">정보 수정하기</p>
         </div>
     </div>
   </div>
@@ -185,8 +185,8 @@
             this.response = res.data
           })
         },
-        fixData() {
-          alert("clicked")
+        fixdata() {
+          this.$router.push("/adjustplace/"+this.response.id)
         }
       },
       mounted() {

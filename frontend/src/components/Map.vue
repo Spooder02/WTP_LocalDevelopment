@@ -10,6 +10,7 @@
     width: 100%;
     height: 100vh;
     z-index: 1;
+    background-color: black;
   }
   .refresh-btn {
     position: relative;
@@ -23,6 +24,11 @@
     color: white;
     border-radius: 10px;
     box-shadow: 0px 8px 15px rgba(255, 255, 255, 0.3);
+  }
+  @media screen and (max-width: 960px) {
+    #map {
+      height: 50vh;
+    }
   }
 </style>
 

@@ -90,19 +90,20 @@
     }
     @media screen and (min-width: 960px) {
         .container {
-            grid-template-columns: 4fr 1fr;
+            grid-template-columns: 75vw 25vw;
         }
         .placeform {
             display: grid;
             height: 100vh;
+            padding: 0 3vw 0 3vw;
         }
-        .placeform > input[type="text"],input[type="file"] {
+        .placeform > input[type="text"],input[type="file"],textarea {
             margin: 10px;
         }
     }
     @media screen and (max-width: 960px) {
         .container {
-            grid-template-rows: 1fr 1fr;
+            grid-template-rows: 50vh 50vh;
         }
         .placeform {
             margin: auto;
