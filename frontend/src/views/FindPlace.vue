@@ -20,8 +20,10 @@
 
 <style scoped>
     .container {
+        margin: auto;
         display: grid;
         padding: 1vw;
+        
     }
     .place-cards {
         margin: 0 0 0 0.5vh;
@@ -38,9 +40,14 @@
     @media screen and (min-width: 960px) {
         .container {
             grid-template-columns: 3fr 1fr;
+            width: 85vw;
+            height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0px 8px 15px rgb(119, 119, 119);
+            overflow: hidden;
         }
         .card-zone {
-            height: 95vh;
+            height: 75vh;
         }
     }
     @media screen and (max-width: 960px) {

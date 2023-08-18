@@ -19,7 +19,7 @@
 
 <style scoped>
     .placeform {
-        height: 95vh;
+        height: 80vh;
         overflow: scroll;
     }
     p {
@@ -56,7 +56,10 @@
         margin: 1vh auto auto auto;
     }
     .container {
+        margin: auto;
+        padding: 1rem;
         display: grid;
+        
     }
     input,textarea {
         border: solid 1.5px #000000;
@@ -90,11 +93,17 @@
     }
     @media screen and (min-width: 960px) {
         .container {
-            grid-template-columns: 4fr 1fr;
+            grid-template-columns: 60vw 25vw;
+            width: 85vw;
+            height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0px 8px 15px rgba(123, 123, 123);
+            overflow: hidden;
         }
         .placeform {
+            margin: auto;
+            width: 20vw;
             display: grid;
-            height: 100vh;
         }
         .placeform > input[type="text"],input[type="file"],textarea {
             margin: 10px;
