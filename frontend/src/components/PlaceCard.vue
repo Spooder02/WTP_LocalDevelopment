@@ -11,7 +11,7 @@
       <p>{{ placeLocation }}</p>
       <p>{{ placeDescription }}</p>
       <a @click="open()">{{ openDetail }}</a>
-      <div :key="key" class="place-details" v-if="placeDetail">
+      <div class="place-details" v-if="placeDetail">
         별점: {{ ratings }} / 5 <br>
         상태: {{ openStatus.status_updated_at? (openStatus.open_status? "열려있음":"닫힘"):"정보 없음" }}
         <button style="background-color: #23C55D; border: 0;" @click="updateOpenStatus(true)">열렸어요</button><button style="background-color: #F84F31; border: 0;" @click="updateOpenStatus(false)">닫혔어요</button>
@@ -36,16 +36,17 @@
             :created_at="comment.comment_uploaded_at"
             /> 
           </div>
+        </div>
+        <div class="subimage-zone">
+          <p>장소 세부 이미지</p>
+          <input style="padding: 3px; border-radius: 3px; border: 1px solid #8b8b8b; margin: 4px;" @change="getImage" type="file" accept="image/*">
+          <button @click="uploadImage">업로드하기</button>
+          <div class="subimage-container">
+            <img v-if="!this.response.sub_images[0]" src="@/assets/unavailable-image.jpg">
+            <img v-for="datas in this.response.sub_images" :src="this.backend_url+datas.image">
           </div>
-          <div class="subimage-zone">
-            <p>장소 세부 이미지</p>
-            <input style="padding: 3px; border-radius: 3px; border: 1px solid #8b8b8b; margin: 4px;" @change="getImage" type="file" accept="image/*">
-            <button @click="uploadImage">업로드하기</button>
-            <div class="subimage-container">
-              <img v-if="!this.response.sub_images[0]" src="@/assets/unavailable-image.jpg">
-              <img v-for="datas in this.response.sub_images" :src="this.backend_url+datas.image">
-            </div>
-          </div>
+        </div>
+        <p style="text-align: right; padding-top: 0.5rem; color:#aaaaaa;" @click="fixData()">정보 수정하기</p>
         </div>
     </div>
   </div>
@@ -104,7 +105,16 @@
           { headers : { Authorization: 'Token '+sessionStorage.getItem('userToken') }}
           )
           .then(() => {
-            alert("별점 등록 성공") 
+            this.reloadData()
+            setTimeout(() => {
+              for (let i = 0; i < this.response.ratings.length; i++) {
+              var rate = 0;
+              rate+=this.response.ratings[i].rating
+              }
+              rate/=this.response.ratings.length
+              this.ratings = rate;
+            }, 200)
+                      
           })
           .catch(e => {
             alert("해당 기능은 로그인 후 사용 가능합니다.")
@@ -171,7 +181,12 @@
         },
         reloadData() {
           axios.get(process.env.VUE_APP_BACKEND_ADDRESS+'/place/get/'+this.response.id+'/')
-          .then(res => (this.response = res.data))
+          .then(res => {
+            this.response = res.data
+          })
+        },
+        fixData() {
+          alert("clicked")
         }
       },
       mounted() {
