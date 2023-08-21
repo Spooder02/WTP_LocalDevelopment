@@ -30,7 +30,8 @@
           <div class="display-comments">
             <Comment
             v-for="comment in this.response.comments.slice().reverse()"
-            :key="comment.id"
+            :place_id="this.placeId"
+            :comment_id="comment.id"
             :username="comment.username"
             :commentValue="comment.comment"
             :created_at="comment.comment_uploaded_at"
@@ -107,9 +108,9 @@
           .then(() => {
             this.reloadData()
             setTimeout(() => {
-              for (let i = 0; i < this.response.ratings.length; i++) {
               var rate = 0;
-              rate+=this.response.ratings[i].rating
+              for (let i = 0; i < this.response.ratings.length; i++) {
+                rate+=this.response.ratings[i].rating
               }
               rate/=this.response.ratings.length
               this.ratings = rate;
@@ -198,8 +199,8 @@
               if (this.response.homepage.search("https://") != 0 && this.response.homepage.search("http://") != 0)
                 this.response.homepage = "//" + this.response.homepage
               if (this.response.ratings[0] != null)  {// ratings data가 available하다면 평균 내기
+                var rate = 0;
                 for (let i = 0; i < this.response.ratings.length; i++) {
-                  var rate = 0;
                   rate+=this.response.ratings[i].rating
                 }
                 rate/=this.response.ratings.length

@@ -13,6 +13,7 @@
                 <button class="send-sms" @click="sendSMS()">인증</button>
             </div>
             <input type="text" placeholder="인증번호 (이후 구현)">
+            
             <input type="text" placeholder="우선순위 1순위" v-model="priority[0]" required>
             <input type="text" placeholder="우선순위 2순위" v-model="priority[1]" required>
             <input type="text" placeholder="우선순위 3순위" v-model="priority[2]" required>
