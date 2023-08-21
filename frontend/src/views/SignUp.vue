@@ -1,185 +1,136 @@
 <template>
-    <div class="register">
-      <div class="form">
-        <p>회원가입</p>
-        <input type="text" placeholder="아이디" v-model="id" required>
-        <input type="password" placeholder="비밀번호" v-model="password" required>
-        <input type="email" placeholder="이메일" v-model="email" required>
-        <input type="text" placeholder="닉네임 (최대 12글자)" v-model="nickname" required>
-        <input type="text" placeholder="이름" v-model="name" required>
-        <div class="input-button">
-          <input type="tel" pattern="[0-1]{3}-[0-9]{4}-[0-9]{4}" placeholder="전화번호 (-제외)" v-model="phonenumber" required>
-          <button class="send-sms" @click="sendSMS()">인증</button>
+    <div class="login-container">
+      <div class="login-form">
+        <h2>로그인</h2>
+        <div class="input-group">
+          <input type="text" class="input-field" v-model="id" autofocus required>
+          <label class="input-label">ID or Email</label>
         </div>
-        <input type="text" placeholder="인증번호 (이후 구현)">
-        <dropdown 
-            v-for="id in 3"
-            :options="optionsList"
-            :placeholder="'우선순위 '+id+'순위 (필수)'"
-            :selected="priority[id-1]"
-            v-on:updateOption="(option) => methodToRunOnSelect(option, id)"/>
-        <button class="submit" @click="submit()">제출</button>
+        <div class="input-group">
+          <input type="password" class="input-field" v-model="pw" required>
+          <label class="input-label">Password</label>
+        </div>
+        <button @click="submit">Login</button>
       </div>
     </div>
-  </template>
+</template>
   
-  <style scoped>
-  .register {
-    height: 100%;
+<style scoped>
+.login-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-size: cover;
+    height: 100vh;
+    background-color: #f2f2f2;
     background-image: url('@/assets/background.jpeg');
-  }
+}
   
-  .form {
-    background-color: rgba(255, 255, 255, 0.9);
-    display: grid;
-    width: 30vw;
-    margin: 3em auto 3em auto;
-    padding: 1em 3em 1em 3em;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.3em 1em 0.1em #a3a3a3;
-  }
+.login-form {
+    width: 400px;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
   
-  .form p {
-    font-weight: 600;
-    font-size: 20pt;
-    margin: 1rem 0 1rem;
-  }
+.login-form h2 {
+    font-size: 24px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
   
-  .form input[type=tel] {
-    max-width: 100%;
-  }
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
   
-  .form input[type=text], .form input[type=password], .form input[type=tel], .form input[type=email] {
-    padding: 1rem;
-    margin: 0.5rem;
-  }
-  
-  .input-button {
-    display: grid;
-    grid-template-columns: 5fr 1fr;
-  }
-  
-  .send-sms {
-    border-radius: 5px;
+.input-field {
+    width: 100%;
+    padding: 10px;
     border: none;
-    width: 4.5rem;
-    height: 3rem;
-    margin: auto;
-    color: white;
-    background-color: #1e90ff;
-    cursor: pointer;
-  }
+    border-bottom: 1px solid #ccc;
+    font-size: 16px;
+    background-color: transparent;
+    transition: border-color 0.3s ease;
+}
   
-  .submit {
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 0;
-    color: white;
-    background-color: #5b92ff;
+.input-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 16px;
+    color: #999;
+    pointer-events: none;
+    transition: transform 0.3s ease, font-size 0.3s ease, color 0.3s ease;
+}
+  
+.input-field:focus,
+.input-field:valid {
+    outline: none;
+    border-color: #1a73e8;
+}
+  
+.input-field:focus ~ .input-label,
+.input-field:valid ~ .input-label {
+    transform: translateY(-120%) scale(0.75);
+    font-size: 12px;
+    color: #1a73e8;
+}
+  
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #1a73e8;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
+}
   
-  .submit:hover {
-    background-color: #1362ff;
-  }
+button:hover {
+    background-color: #0e59b3;
+}
+
+</style>
   
-  @media screen and (max-width: 960px) {
-    .form {
-      width: 80vw;
-      margin: 10vw auto 10vw auto;
-      padding: 5vh 5vw 5vh 5vw;
-    }
-  }
-  </style>
-  
-  <script>
-  import axios from 'axios'
-  import dropdown from 'vue-dropdowns';
-  import CryptoJS from 'crypto-js'
+<script>
+  import axios from 'axios';
   export default {
-    name: "signup",
-    components: {
-      'dropdown': dropdown
-    },
+    name: "Login",
     data() {
       return {
-        id: '',
-        name: '',
-        password: '',
-        email: '',
-        nickname: '',
-        phonenumber: '',
-        priority: ['', '', ''],
-        verified: false,
-        verifycode: null,
-        optionsList: [{name: '#넓은구장'}, {name: '#편리한교통'}, {name: '#최신시설'}, {name: '#깔끔한구장'}, {name: '#작은구장'}, {name: '#저렴한이용'}, {name: '#프리미엄시설'}]
+        id: "",
+        pw: ""
       };
     },
     methods: {
       submit() {
-        if (
-          this.id != '' &&
-          this.name != '' &&
-          this.password != '' &&
-          this.email != '' &&
-          this.nickname != '' &&
-          this.phonenumber != '' &&
-          this.priority[0] != '' &&
-          this.priority[1] != '' &&
-          this.priority[2] != ''
-        ) {
-          if (this.verified) {
-            axios
-              .post(
-                process.env.VUE_APP_BACKEND_ADDRESS + '/auth/register/',
-                {
-                  username: this.id,
-                  nickname: this.nickname,
-                  realname: this.name,
-                  email: this.email,
-                  password: this.password,
-                  phonenumber: this.phonenumber,
-                  first_priority: this.priority[0],
-                  second_priority: this.priority[1],
-                  third_priority: this.priority[2],
-                },
-                {
-                  headers: {
-                    "Content-Type": "application/json"
-                  }
-                }
-              )
-              .then(response => {
-                alert("회원가입에 성공했습니다!");
-                this.$router.push("/");
-              })
-              .catch(response => {
-                alert("회원가입에 실패했습니다!");
-              });
-          } else {
-            alert("전화번호 인증이 필요합니다!");
-          }
-        } else {
-          alert("모든 정보를 다 입력하세요!");
-        }
-      },
-      sendSMS() {
-        if (/^[0-9]{3}-[0-9]{4}-[0-9]{4}$/.test(this.phonenumber)) {
-          alert("인증되었습니다");
-          this.verified = true;
-        } else {
-          alert("전화번호를 형식에 맞게 입력하세요");
-        }
-      },
-      methodToRunOnSelect(option, id) {
-        this.priority[id] = option.name;
-      },
+        axios
+          .post(
+            process.env.VUE_APP_BACKEND_ADDRESS + "/auth/login/",
+            {
+              username: this.id,
+              password: this.pw
+            },
+            {
+              headers: {
+                "Content-Type": "application/json"
+              }
+            }
+          )
+          .then(response => {
+            sessionStorage.setItem("nickname", response.data.nickname.nickname);
+            sessionStorage.setItem("userToken", response.data.token);
+            sessionStorage.setItem("level", response.data.level);
+            this.$router.push("/");
+          })
+          .catch(response => {
+            alert("로그인 정보를 다시 확인하세요");
+          });
+      }
     }
   };
-  </script>
+</script>
   
